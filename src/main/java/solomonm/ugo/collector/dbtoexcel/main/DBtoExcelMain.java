@@ -7,7 +7,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 @Component
-@PropertySource(value = "classpath:application.properties", encoding = "UTF-8")
+@PropertySource(value = "classpath:application.yml", encoding = "UTF-8")
 public class DBtoExcelMain implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
