@@ -64,7 +64,7 @@ public class DBtoExcelMain implements ApplicationRunner {
         row.createCell(8).setCellValue("전체평균");
 
         // 1000개의 행을 생성
-        for (int i = 1; i < 1000; i++) {
+        for (int i = 1; i < excelElement.size(); i++) {
             execlinfo = excelElement.get(i - 1);
             row = sheet.createRow(i);
             row.createCell(0).setCellValue("202302");
@@ -73,9 +73,9 @@ public class DBtoExcelMain implements ApplicationRunner {
             row.createCell(3).setCellValue(execlinfo.getSt_name());
             row.createCell(4).setCellValue(execlinfo.getEd_name());
             row.createCell(5).setCellValue(execlinfo.getDistance());
-            row.createCell(6).setCellValue(execlinfo.getWeekDay_avg());
-            row.createCell(7).setCellValue(execlinfo.getWeekEnd_avg());
-            row.createCell(8).setCellValue(execlinfo.getAll_avg());
+//            row.createCell(6).setCellValue(execlinfo.getWeekDay_avg().isNaN()?0:execlinfo.getWeekDay_avg());
+//            row.createCell(7).setCellValue(execlinfo.getWeekEnd_avg().isNaN()?0:execlinfo.getWeekEnd_avg());
+//            row.createCell(8).setCellValue(execlinfo.getAll_avg().isNaN()?0:execlinfo.getAll_avg());
         }
 
         // 파일로 저장
