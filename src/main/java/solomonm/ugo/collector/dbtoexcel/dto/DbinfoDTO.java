@@ -1,5 +1,10 @@
 package solomonm.ugo.collector.dbtoexcel.dto;
 
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
 public class DbinfoDTO {
     private String i_day;
     private String i_d;
