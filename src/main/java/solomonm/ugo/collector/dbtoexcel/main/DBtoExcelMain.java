@@ -30,11 +30,11 @@ public class DBtoExcelMain implements ApplicationRunner {
     }
 
 
-    public List<ExcelColDTO> dblist(){
+    public List<ExcelColDTO> dblist() {
 
         List<ExcelColDTO> data = excelInfoService.selectData();
 
-        for (int i = 0; i < data.size(); i++){
+        for (int i = 0; i < data.size(); i++) {
 
             System.out.println(data.get(i));
         }
@@ -43,12 +43,13 @@ public class DBtoExcelMain implements ApplicationRunner {
         return data;
     }
 
-    public void fileMake(){
+    public void fileMake(List<ExcelColDTO> excelElement) {
         Workbook workbook = new SXSSFWorkbook();
         Sheet sheet = workbook.createSheet("DataSheet");
         CellStyle boldStyle = workbook.createCellStyle();
         Font boldFont = workbook.createFont();
         boldStyle.setFont(boldFont);
+        ExcelColDTO execlinfo = null;
         Row row = null;
 
         row = sheet.createRow(0);
@@ -56,7 +57,7 @@ public class DBtoExcelMain implements ApplicationRunner {
         row.createCell(1).setCellValue("ROAD_NAME");
         row.createCell(2).setCellValue("DIR_NAME");
         row.createCell(3).setCellValue("ST_NAME");
-        row.createCell(4).setCellValue("EC_NAME");
+        row.createCell(4).setCellValue("ED_NAME");
         row.createCell(5).setCellValue("DISTANCE");
         row.createCell(6).setCellValue("평일평균");
         row.createCell(7).setCellValue("주말평균");
@@ -64,9 +65,17 @@ public class DBtoExcelMain implements ApplicationRunner {
 
         // 1000개의 행을 생성
         for (int i = 1; i < 1000; i++) {
+            execlinfo = excelElement.get(i - 1);
             row = sheet.createRow(i);
-            row.createCell(0).setCellValue("Row " + i);
-            row.createCell(1).setCellValue(i);
+            row.createCell(0).setCellValue("202302");
+            row.createCell(1).setCellValue(execlinfo.getRoad_name());
+            row.createCell(2).setCellValue(execlinfo.getDir_name());
+            row.createCell(3).setCellValue(execlinfo.getSt_name());
+            row.createCell(4).setCellValue(execlinfo.getEd_name());
+            row.createCell(5).setCellValue(execlinfo.getDistance());
+            row.createCell(6).setCellValue(execlinfo.getWeekDay_avg());
+            row.createCell(7).setCellValue(execlinfo.getWeekEnd_avg());
+            row.createCell(8).setCellValue(execlinfo.getAll_avg());
         }
 
         // 파일로 저장
@@ -87,13 +96,10 @@ public class DBtoExcelMain implements ApplicationRunner {
     }
 
 
-
-
     @Override
     public void run(ApplicationArguments args) throws Exception {
         System.out.println("-------------------------------->");
-        dblist();
-        fileMake();
+        fileMake(dblist());
 
     }
 }
