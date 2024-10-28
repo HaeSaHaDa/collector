@@ -8,5 +8,5 @@ import java.util.List;
 
 @Mapper
 public interface ExcelInfoMapper {
-    public List<ExcelColDTO> selectData();
+    public List<ExcelColDTO> selectData(String lastMonthString, String startOfLastMonth, String endOfLastMonth);
 }

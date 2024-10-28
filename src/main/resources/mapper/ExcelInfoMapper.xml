@@ -6,7 +6,7 @@
     <select id="selectData" resultType="solomonm.ugo.collector.dbtoexcel.dto.ExcelColDTO">
         <![CDATA[
         SELECT
-            '202303' AS month,
+            #{lastMonthString} AS month,
             ROAD_NAME,
             DIR_NAME,
             ST_NAME,
@@ -39,7 +39,7 @@
             FROM TB_SEOCHO_RESULT
             WHERE ROAD_NAME <> '<평균>'
               AND ST_NAME <> '*'
-              AND I_DAY BETWEEN '20230201' AND '20230228'
+              AND I_DAY BETWEEN #{startOfLastMonth} AND #{endOfLastMonth}
         ) AS subquery
         GROUP BY
             ROAD_NAME,

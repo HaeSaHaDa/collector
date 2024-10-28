@@ -9,4 +9,5 @@ import java.util.List;
 
 public interface ExcelInfoService {
     List<ExcelColDTO> selectData();
+    public void fileMake(List<ExcelColDTO> excelElement);
 }

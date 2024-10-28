@@ -15,4 +15,6 @@ public class ExcelColDTO {
     private Double weekDay_avg;
     private Double weekEnd_avg;
     private Double all_avg;
+
+
 }

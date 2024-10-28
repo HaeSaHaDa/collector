@@ -6,5 +6,7 @@ spring:
     username: collector
     password: 6382
     driver-class-name: org.mariadb.jdbc.Driver
+  http:
+    encoding: { charset: UTF-8, enabled: true, force: true }
 mybatis:
   mapper-locations: classpath:mapper/**/*.xml
