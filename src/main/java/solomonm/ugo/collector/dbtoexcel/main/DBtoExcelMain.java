@@ -15,7 +15,6 @@ import solomonm.ugo.collector.dbtoexcel.services.ExcelInfoService;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -74,9 +73,9 @@ public class DBtoExcelMain implements ApplicationRunner {
             row.createCell(3).setCellValue(execlinfo.getSt_name());
             row.createCell(4).setCellValue(execlinfo.getEd_name());
             row.createCell(5).setCellValue(execlinfo.getDistance());
-            row.createCell(6).setCellValue(execlinfo.getWeekDay_avg()==null?0: execlinfo.getWeekDay_avg());
-            row.createCell(7).setCellValue(execlinfo.getWeekEnd_avg()==null?0:execlinfo.getWeekEnd_avg());
-            row.createCell(8).setCellValue(execlinfo.getAll_avg()==null?0:execlinfo.getAll_avg());
+//            row.createCell(6).setCellValue(execlinfo.getWeekDay_avg().isNaN()?0:execlinfo.getWeekDay_avg());
+//            row.createCell(7).setCellValue(execlinfo.getWeekEnd_avg().isNaN()?0:execlinfo.getWeekEnd_avg());
+//            row.createCell(8).setCellValue(execlinfo.getAll_avg().isNaN()?0:execlinfo.getAll_avg());
         }
 
         // 파일로 저장
