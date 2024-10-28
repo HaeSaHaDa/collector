@@ -2,8 +2,7 @@ package solomonm.ugo.collector.dbtoexcel.main;
 
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.PropertySource;
@@ -11,10 +10,10 @@ import org.springframework.stereotype.Component;
 import solomonm.ugo.collector.dbtoexcel.dto.DbinfoDTO;
 import solomonm.ugo.collector.dbtoexcel.dto.ExcelColDTO;
 import solomonm.ugo.collector.dbtoexcel.services.ExcelInfoService;
+import solomonm.ugo.collector.dbtoexcel.util.PreviousMonthConfig;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -24,6 +23,14 @@ public class DBtoExcelMain implements ApplicationRunner {
 
     private final ExcelInfoService excelInfoService;
     private DbinfoDTO dbinfoDTO;
+    @Value("${filegen.filepath}")
+    private String filepath;
+    @Value("${filegen.filename}")
+    private String filename;
+    @Value("${filegen.fileExtension}")
+    private String fileExtension;
+    @Value("${filegen.fileheader}")
+    private List<String> fileheader;
 
     public DBtoExcelMain(ExcelInfoService excelInfoService) {
         this.excelInfoService = excelInfoService;
@@ -32,8 +39,30 @@ public class DBtoExcelMain implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        excelInfoService.fileMake(excelInfoService.selectData());
-        System.out.println("-------------------------------->한글");
+        log.info("---------------------------------------------------------> [ START ]");
+        String filePath = filepath + File.separator + filename + PreviousMonthConfig.lastMonth_MM + "월." + fileExtension;
+        List<ExcelColDTO> dbData = new ArrayList<>();
+        List<String> headers = new ArrayList<>();
+        if (dbData.isEmpty()) {
+            headers = fileheader;
+            dbData = excelInfoService.selectData();
+
+            if (dbData.isEmpty()) {
+                log.warn("로드된 데이터가 없습니다. 엑셀 파일 생성을 중단합니다.");
+
+            }else{
+                log.info("데이터가 성공적으로 로드되었습니다. 로드된 데이터 개수: {}", dbData.size());
+                excelInfoService.fileMake(
+                        headers,
+                        dbData,
+                        filePath,
+                        fileExtension);
+            }
+
+        } else {
+            log.error("기존 데이터가 존재합니다. 데이터 개수: {}", dbData.size());
+        }
+        log.info("------------------------------------------------------------> [ END ]");
 
     }
 }

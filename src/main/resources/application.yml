@@ -10,3 +10,9 @@ spring:
     encoding: { charset: UTF-8, enabled: true, force: true }
 mybatis:
   mapper-locations: classpath:mapper/**/*.xml
+#  file config(filepath: 저장경로 / filename: 파일명 / fileExtension: 파일 확장자)
+filegen:
+  filepath: D:\myProject\SolomonPj
+  filename: 연간월평균
+  fileExtension: xlsx
+  fileheader: Month, ROAD_NAME, DIR_NAME, ST_NAME, ED_NAME, DISTANCE, 평일평균, 주말평균, 전체평균
