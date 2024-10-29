@@ -13,7 +13,6 @@ import solomonm.ugo.collector.dbtoexcel.services.ExcelInfoService;
 import solomonm.ugo.collector.dbtoexcel.util.PreviousMonthConfig;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -40,29 +39,23 @@ public class DBtoExcelMain implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) throws Exception {
         log.info("---------------------------------------------------------> [ START ]");
-        String filePath = filepath + File.separator + filename + PreviousMonthConfig.lastMonth_MM + "월." + fileExtension;
-        List<ExcelColDTO> dbData = new ArrayList<>();
-        List<String> headers = new ArrayList<>();
+
+        String filePath = String.format("%s%s%s%s월.%s",
+                filepath,
+                File.separator,
+                filename,
+                PreviousMonthConfig.lastMonth_MM,
+                fileExtension);
+
+        List<ExcelColDTO> dbData = excelInfoService.selectData();
+
         if (dbData.isEmpty()) {
-            headers = fileheader;
-            dbData = excelInfoService.selectData();
-
-            if (dbData.isEmpty()) {
-                log.warn("로드된 데이터가 없습니다. 엑셀 파일 생성을 중단합니다.");
-
-            }else{
-                log.info("데이터가 성공적으로 로드되었습니다. 로드된 데이터 개수: {}", dbData.size());
-                excelInfoService.fileMake(
-                        headers,
-                        dbData,
-                        filePath,
-                        fileExtension);
-            }
-
+            log.warn("로드된 데이터가 없습니다. 엑셀 파일 생성을 중단합니다.");
         } else {
-            log.error("기존 데이터가 존재합니다. 데이터 개수: {}", dbData.size());
+            log.info("데이터가 성공적으로 로드되었습니다. 로드된 데이터 개수: {}", dbData.size());
+            excelInfoService.fileMake(fileheader, dbData, filePath, fileExtension);
         }
-        log.info("------------------------------------------------------------> [ END ]");
 
+        log.info("------------------------------------------------------------> [ END ]");
     }
 }
