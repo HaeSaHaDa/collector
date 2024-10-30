@@ -35,25 +35,48 @@ public class DBtoExcelMain implements ApplicationRunner {
         this.excelInfoService = excelInfoService;
     }
 
-
-    @Override
-    public void run(ApplicationArguments args) throws Exception {
-        log.info("---------------------------------------------------------> [ START ]");
-
-        String filePath = String.format("%s%s%s%s월.%s",
+    private String prepareFilePath() {
+        return String.format("%s%s%s%s월.%s",
                 filepath,
                 File.separator,
                 filename,
                 PreviousMonthConfig.lastMonth_MM,
                 fileExtension);
+    }
+    private String noDataFilePath() {
+        return String.format("%s%s%s%s월%S.%s",
+                filepath,
+                File.separator,
+                filename,
+                PreviousMonthConfig.lastMonth_MM,
+                "_NoData",
+                fileExtension);
+    }
 
-        List<ExcelColDTO> dbData = excelInfoService.selectData();
-
+    private boolean validateData(List<ExcelColDTO> dbData) {
         if (dbData.isEmpty()) {
-            log.warn("로드된 데이터가 없습니다. 엑셀 파일 생성을 중단합니다.");
+            log.warn("로드된 데이터가 없습니다");
+            return false;
         } else {
             log.info("데이터가 성공적으로 로드되었습니다. 로드된 데이터 개수: {}", dbData.size());
+            return true;
+        }
+    }
+
+    @Override
+    public void run(ApplicationArguments args) throws Exception {
+        log.info("---------------------------------------------------------> [ START ]");
+
+        String filePath = prepareFilePath();
+        String filePath_noData=noDataFilePath();
+
+        List<ExcelColDTO> dbData = null;
+        dbData = excelInfoService.selectData();
+
+        if (validateData(dbData)) {
             excelInfoService.fileMake(fileheader, dbData, filePath, fileExtension);
+        }else{
+            excelInfoService.fileMake(fileheader, dbData, filePath_noData, fileExtension);
         }
 
         log.info("------------------------------------------------------------> [ END ]");

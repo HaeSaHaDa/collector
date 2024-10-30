@@ -18,5 +18,4 @@ public class DbinfoDTO {
     private Integer link_idx;
     private Integer axis_idx;
 
-
 }

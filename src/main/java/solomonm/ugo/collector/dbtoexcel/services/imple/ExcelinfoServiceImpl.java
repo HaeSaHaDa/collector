@@ -16,9 +16,11 @@ import java.util.List;
 public class ExcelinfoServiceImpl implements ExcelInfoService {
 
     private final ExcelInfoMapper excelInfoMapper;
+    private final ExcelFileGenerator excelFileGenerator;
 
-    public ExcelinfoServiceImpl(ExcelInfoMapper excelInfoMapper) {
+    public ExcelinfoServiceImpl(ExcelInfoMapper excelInfoMapper, ExcelFileGenerator excelFileGenerator) {
         this.excelInfoMapper = excelInfoMapper;
+        this.excelFileGenerator = excelFileGenerator;
     }
 
     @Override
@@ -44,22 +46,28 @@ public class ExcelinfoServiceImpl implements ExcelInfoService {
         try {
             if (extension.equals("xlsx")) {
                 log.info("xlsx 파일 생성(경로: {})", filePath);
-                ExcelFileGenerator.generateXLSXFile(
+                excelFileGenerator.generate_XLSX_File(
                         fileheader,
                         filePath,
                         PreviousMonthConfig.lastMonth_yyyyMM,
                         dbData
                 );
-            } else {
+                log.info("엑셀 파일이 성공적으로 생성되었습니다. 경로: {}", filePath);
+
+            } else if (extension.equals("xls") || extension.equals("cell")) {
                 log.info("xls 파일 생성(경로: {})", filePath);
-                ExcelFileGenerator.generateXLSFile(
+                excelFileGenerator.generate_XLS_File(
                         fileheader,
                         filePath,
                         PreviousMonthConfig.lastMonth_yyyyMM,
                         dbData
                 );
+                log.info("엑셀 파일이 성공적으로 생성되었습니다. 경로: {}", filePath);
+
+            } else {
+                log.error("데이터 확장자는 'xlsx, xls, cell' 중 하나를 선택해 주세요.");
             }
-            log.info("엑셀 파일이 성공적으로 생성되었습니다. 경로: {}", filePath);
+
         } catch (Exception e) {
             log.error("파일 생성 중 오류 발생: {}", e.getMessage());
         }

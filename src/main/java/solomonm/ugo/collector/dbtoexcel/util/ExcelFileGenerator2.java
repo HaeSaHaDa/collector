@@ -16,7 +16,7 @@ import java.util.stream.IntStream;
 
 @Slf4j
 @Component
-public class ExcelFileGenerator {
+public class ExcelFileGenerator2 {
 
     /**
      * Excel 파일의 헤더를 작성합니다.
@@ -27,18 +27,19 @@ public class ExcelFileGenerator {
      */
     private void createHeaderRow(List<String> fileheader, Sheet sheet, Workbook workbook) {
         Row headerRow = sheet.createRow(0);
-        ExcelCellStyle headerStyle = new ExcelCellStyle(workbook, true);
+        CellStyle cellStyle = createHeaderCellStyle(workbook);
+        String header0 = "'" + PreviousMonthConfig.lastMonth_yyyyMM + "'";
 
         // 첫 번째 셀에 이전 달 정보 추가
         Cell cell0 = headerRow.createCell(0);
-        cell0.setCellValue("'" + PreviousMonthConfig.lastMonth_yyyyMM + "'");
-        cell0.setCellStyle(headerStyle.getStyle());
+        cell0.setCellValue(header0);
+        cell0.setCellStyle(cellStyle);
 
         // 나머지 헤더 셀 추가
         for (int i = 0; i < fileheader.size(); i++) {
             Cell cell = headerRow.createCell(i + 1);
             cell.setCellValue(fileheader.get(i));
-            cell.setCellStyle(headerStyle.getStyle());
+            cell.setCellStyle(cellStyle);
         }
     }
 
@@ -51,7 +52,7 @@ public class ExcelFileGenerator {
      */
     private void populateDataRows(Sheet sheet, String month, List<ExcelColDTO> dbData) {
         final AtomicInteger rowIndex = new AtomicInteger(1);
-        ExcelCellStyle borderedStyle = new ExcelCellStyle(sheet.getWorkbook(), false); // 셀 스타일 생성
+        CellStyle borderedStyle = createBorderedCellStyle(sheet.getWorkbook()); // 셀 스타일 생성
 
         IntStream.range(0, dbData.size()).forEach(i -> {
             ExcelColDTO dto = dbData.get(i);
@@ -77,9 +78,9 @@ public class ExcelFileGenerator {
      * @param value     셀에 설정할 값
      * @param cellStyle 적용할 셀 스타일
      */
-    private void setCellValueWithBorder(Cell cell, Object value, ExcelFileGenerator.ExcelCellStyle cellStyle) {
+    private void setCellValueWithBorder(Cell cell, Object value, CellStyle cellStyle) {
         setCellValue(cell, value); // 값 설정
-        cell.setCellStyle(cellStyle.getStyle()); // 스타일 적용
+        cell.setCellStyle(cellStyle); // 스타일 적용
     }
 
     /**
@@ -98,6 +99,41 @@ public class ExcelFileGenerator {
         } else {
             cell.setBlank();
         }
+    }
+
+    /**
+     * 테두리가 있는 셀 스타일을 생성합니다.
+     *
+     * @param workbook 워크북
+     * @return 테두리 스타일이 적용된 셀 스타일
+     */
+    private CellStyle createBorderedCellStyle(Workbook workbook) {
+        CellStyle cellStyle = workbook.createCellStyle();
+        cellStyle.setBorderTop(BorderStyle.THIN);
+        cellStyle.setBorderBottom(BorderStyle.THIN);
+        cellStyle.setBorderLeft(BorderStyle.THIN);
+        cellStyle.setBorderRight(BorderStyle.THIN);
+        return cellStyle;
+    }
+
+    /**
+     * 헤더 셀 스타일을 생성합니다.
+     *
+     * @param workbook 워크북
+     * @return 헤더 셀 스타일
+     */
+    private CellStyle createHeaderCellStyle(Workbook workbook) {
+        CellStyle cellStyle = workbook.createCellStyle();
+        Font boldFont = workbook.createFont();
+        boldFont.setBold(true);
+        boldFont.setFontName("Arial");
+        boldFont.setFontHeightInPoints((short) 10);
+        cellStyle.setFont(boldFont);
+        cellStyle.setBorderTop(BorderStyle.THIN);
+        cellStyle.setBorderBottom(BorderStyle.THIN);
+        cellStyle.setBorderLeft(BorderStyle.THIN);
+        cellStyle.setBorderRight(BorderStyle.THIN);
+        return cellStyle;
     }
 
     /**
@@ -150,31 +186,6 @@ public class ExcelFileGenerator {
         } catch (IllegalArgumentException e) {
             log.warn("전달된 데이터가 유효하지 않습니다: {}", e.getMessage());
             throw e; // 예외를 다시 던져 호출자에게 알림
-        }
-    }
-
-    // 내부 클래스: ExcelCellStyle
-    private static class ExcelCellStyle {
-        private final CellStyle style;
-
-        public ExcelCellStyle(Workbook workbook, boolean isHeader) {
-            style = workbook.createCellStyle();
-            if (isHeader) {
-                Font boldFont = workbook.createFont();
-                boldFont.setBold(true);
-                boldFont.setFontName("Arial");
-                boldFont.setFontHeightInPoints((short) 10);
-                style.setFont(boldFont);
-            }
-            // 테두리 스타일 적용
-            style.setBorderTop(BorderStyle.THIN);
-            style.setBorderBottom(BorderStyle.THIN);
-            style.setBorderLeft(BorderStyle.THIN);
-            style.setBorderRight(BorderStyle.THIN);
-        }
-
-        public CellStyle getStyle() {
-            return style;
         }
     }
 }

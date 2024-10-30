@@ -8,8 +8,8 @@ import java.util.List;
 @Mapper
 public interface ExcelInfoMapper {
     List<ExcelColDTO> selectData(
-            String lastMonthString,
-            String startOfLastMonth,
-            String endOfLastMonth
+            String lastMonth_yyyyMM,
+            String firstDay_yyyyMMdd,
+            String lastDay_yyyyMMdd
     );
 }
