@@ -5,6 +5,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.stereotype.Component;
+import solomonm.ugo.collector.dbtoexcel.config.PreviousMonthConfig;
 import solomonm.ugo.collector.dbtoexcel.dto.ExcelColDTO;
 
 import java.io.BufferedOutputStream;

@@ -4,7 +4,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.TaskScheduler;
 import org.springframework.stereotype.Component;
+import solomonm.ugo.collector.dbtoexcel.config.PreviousMonthConfig;
 import solomonm.ugo.collector.dbtoexcel.dto.ExcelColDTO;
 
 import java.io.BufferedOutputStream;
@@ -17,6 +20,9 @@ import java.util.stream.IntStream;
 @Slf4j
 @Component
 public class ExcelFileGenerator {
+
+    @Autowired
+    private TaskScheduler taskScheduler;
 
     /**
      * Excel 파일의 헤더를 작성합니다.
@@ -111,8 +117,26 @@ public class ExcelFileGenerator {
             populateDataRows(sheet, month, data);
             workbook.write(fileOut);
 
+        } catch (Exception e) {
+            log.info("{} 파일 생성 중 오류가 발생하여 5분 뒤에 재시도 합니다.{}", extension, e.getMessage());
+            taskScheduler.schedule(() -> re_generate_File(fileheader, filePath, month, data, extension),
+                    PreviousMonthConfig.now_5min);
+        }
+
+        log.info("{} 파일이 생성되었습니다.", extension);
+    }
+
+    public void re_generate_File(List<String> fileheader, String filePath, String month, List<ExcelColDTO> data, String extension) {
+        try (BufferedOutputStream fileOut = new BufferedOutputStream(new FileOutputStream(filePath));
+             Workbook workbook = "xlsx".equals(extension) ? new SXSSFWorkbook() : new HSSFWorkbook()) {
+
+            Sheet sheet = workbook.createSheet("Data");
+            createHeaderRow(fileheader, sheet, workbook);
+            populateDataRows(sheet, month, data);
+            workbook.write(fileOut);
+            log.info("------------------------------------------------------------> [ END ]");
         } catch (IOException e) {
-            log.info("{} 파일 생성 중 오류가 발생했습니다. {}", extension, e);
+            log.info("{} 파일 생성 중 오류가 발생했습니다. {}", extension, e.getMessage());
             throw new RuntimeException(e);
         } catch (IllegalArgumentException e) {
             log.warn("전달된 데이터가 유효하지 않습니다: {}", e.getMessage());

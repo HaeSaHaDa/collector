@@ -9,7 +9,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 import solomonm.ugo.collector.dbtoexcel.dto.ExcelColDTO;
 import solomonm.ugo.collector.dbtoexcel.services.ExcelInfoService;
-import solomonm.ugo.collector.dbtoexcel.util.PreviousMonthConfig;
+import solomonm.ugo.collector.dbtoexcel.config.PreviousMonthConfig;
 
 import java.io.File;
 import java.util.List;
@@ -42,15 +42,6 @@ public class DBtoExcelMain implements ApplicationRunner {
                 PreviousMonthConfig.lastMonth_MM,
                 fileExtension);
     }
-    private String noDataFilePath() {
-        return String.format("%s%s%s%s월%S.%s",
-                filepath,
-                File.separator,
-                filename,
-                PreviousMonthConfig.lastMonth_MM,
-                "_NoData",
-                fileExtension);
-    }
 
     private boolean validateData(List<ExcelColDTO> dbData) {
         if (dbData.isEmpty()) {
@@ -68,7 +59,7 @@ public class DBtoExcelMain implements ApplicationRunner {
 
         String filePath = prepareFilePath();
 
-        List<ExcelColDTO> dbData = null;
+        List<ExcelColDTO> dbData;
         dbData = excelInfoService.selectData();
 
         if (validateData(dbData)) {

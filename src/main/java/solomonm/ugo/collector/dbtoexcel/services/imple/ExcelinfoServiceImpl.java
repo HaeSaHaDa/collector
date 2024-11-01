@@ -2,11 +2,12 @@ package solomonm.ugo.collector.dbtoexcel.services.imple;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import solomonm.ugo.collector.dbtoexcel.dto.ExcelColDTO;
 import solomonm.ugo.collector.dbtoexcel.mapper.ExcelInfoMapper;
 import solomonm.ugo.collector.dbtoexcel.services.ExcelInfoService;
 import solomonm.ugo.collector.dbtoexcel.util.ExcelFileGenerator;
-import solomonm.ugo.collector.dbtoexcel.util.PreviousMonthConfig;
+import solomonm.ugo.collector.dbtoexcel.config.PreviousMonthConfig;
 
 import java.util.List;
 
@@ -42,6 +43,7 @@ public class ExcelinfoServiceImpl implements ExcelInfoService {
      * @param filePath  - 파일 경로
      * @param extension - 파일 확장자
      */
+    @Transactional
     @Override
     public void fileMake(List<String> fileheader, List<ExcelColDTO> dbData, String filePath, String extension) {
         try {

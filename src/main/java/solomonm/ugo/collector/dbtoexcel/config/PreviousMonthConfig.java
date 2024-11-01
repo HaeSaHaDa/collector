@@ -1,7 +1,9 @@
-package solomonm.ugo.collector.dbtoexcel.util;
+package solomonm.ugo.collector.dbtoexcel.config;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.TemporalAdjusters;
@@ -19,9 +21,12 @@ public class PreviousMonthConfig {
     public static String lastDay_yyyyMMdd;
     public static String lastMonth_yyyyMM;
     public static String lastMonth_MM;
+    public static Instant now_5min;
+
 
     static {
         try {
+            now_5min = Instant.now().plus(Duration.ofMinutes(5));
             lastMonth = LocalDate.now().minusMonths(1);
             firstDay = lastMonth.with(TemporalAdjusters.firstDayOfMonth());
             lastDay = lastMonth.with(TemporalAdjusters.lastDayOfMonth());
