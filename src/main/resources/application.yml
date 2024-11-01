@@ -14,5 +14,5 @@ mybatis:
 filegen:
   filepath: D:\myProject\SolomonPj
   filename: 연간월평균
-  fileExtension: xlsx
-  fileheader: ROAD_NAME, DIR_NAME, ST_NAME, ED_NAME, DISTANCE, 평일평균, 주말평균, 전체평균
+  fileExtension: xls
+  fileheader: MONTH, ROAD_NAME, DIR_NAME, ST_NAME, ED_NAME, DISTANCE, 평일평균, 주말평균, 전체평균

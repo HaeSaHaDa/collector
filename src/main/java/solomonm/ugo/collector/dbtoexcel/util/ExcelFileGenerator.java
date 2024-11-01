@@ -28,18 +28,20 @@ public class ExcelFileGenerator {
     private void createHeaderRow(List<String> fileheader, Sheet sheet, Workbook workbook) {
         Row headerRow = sheet.createRow(0);
         ExcelCellStyle headerStyle = new ExcelCellStyle(workbook, true);
-
+        String firstTitle = "'" + PreviousMonthConfig.lastMonth_yyyyMM + "'";
         // 첫 번째 셀에 이전 달 정보 추가
-        Cell cell0 = headerRow.createCell(0);
-        cell0.setCellValue("'" + PreviousMonthConfig.lastMonth_yyyyMM + "'");
-        cell0.setCellStyle(headerStyle.getStyle());
+
 
         // 나머지 헤더 셀 추가
         for (int i = 0; i < fileheader.size(); i++) {
-            Cell cell = headerRow.createCell(i + 1);
+            Cell cell = headerRow.createCell(i);
             cell.setCellValue(fileheader.get(i));
             cell.setCellStyle(headerStyle.getStyle());
         }
+
+        Cell cell0 = headerRow.createCell(0);
+        cell0.setCellValue(firstTitle);
+        cell0.setCellStyle(headerStyle.getStyle());
     }
 
     /**
@@ -77,18 +79,7 @@ public class ExcelFileGenerator {
      * @param value     셀에 설정할 값
      * @param cellStyle 적용할 셀 스타일
      */
-    private void setCellValueWithBorder(Cell cell, Object value, ExcelFileGenerator.ExcelCellStyle cellStyle) {
-        setCellValue(cell, value); // 값 설정
-        cell.setCellStyle(cellStyle.getStyle()); // 스타일 적용
-    }
-
-    /**
-     * 셀에 값을 설정합니다.
-     *
-     * @param cell  설정할 셀
-     * @param value 설정할 값
-     */
-    private void setCellValue(Cell cell, Object value) {
+    private void setCellValueWithBorder(Cell cell, Object value, ExcelCellStyle cellStyle) {
         if (value != null) {
             if (value instanceof Number) {
                 cell.setCellValue(((Number) value).doubleValue());
@@ -98,7 +89,10 @@ public class ExcelFileGenerator {
         } else {
             cell.setBlank();
         }
+
+        cell.setCellStyle(cellStyle.getStyle()); // 스타일 적용
     }
+
 
     /**
      * xlsx 파일을 생성합니다.
@@ -108,49 +102,24 @@ public class ExcelFileGenerator {
      * @param month      월 정보
      * @param data       데이터 리스트
      */
-    public void generate_XLSX_File(List<String> fileheader, String filePath, String month, List<ExcelColDTO> data) {
-        try (Workbook workbook = new SXSSFWorkbook();
-             BufferedOutputStream fileOut = new BufferedOutputStream(new FileOutputStream(filePath))) {
+    public void generate_File(List<String> fileheader, String filePath, String month, List<ExcelColDTO> data, String extension) {
+        try (BufferedOutputStream fileOut = new BufferedOutputStream(new FileOutputStream(filePath));
+             Workbook workbook = "xlsx".equals(extension) ? new SXSSFWorkbook() : new HSSFWorkbook()) {
 
-            Sheet sheet = workbook.createSheet("DataSheet");
+            Sheet sheet = workbook.createSheet("Data");
             createHeaderRow(fileheader, sheet, workbook);
             populateDataRows(sheet, month, data);
             workbook.write(fileOut);
 
-            log.info("xlsx 파일이 생성되었습니다.");
         } catch (IOException e) {
-            log.info("xlsx 파일 생성 중 오류가 발생했습니다. {}", e);
+            log.info("{} 파일 생성 중 오류가 발생했습니다. {}", extension, e);
             throw new RuntimeException(e);
         } catch (IllegalArgumentException e) {
             log.warn("전달된 데이터가 유효하지 않습니다: {}", e.getMessage());
             throw e; // 예외를 다시 던져 호출자에게 알림
         }
-    }
 
-    /**
-     * xls 파일을 생성합니다.
-     *
-     * @param fileheader 파일 헤더 리스트
-     * @param filePath   생성할 파일 경로
-     * @param month      월 정보
-     * @param data       데이터 리스트
-     */
-    public void generate_XLS_File(List<String> fileheader, String filePath, String month, List<ExcelColDTO> data) {
-        try (Workbook workbook = new HSSFWorkbook();
-             BufferedOutputStream fileOut = new BufferedOutputStream(new FileOutputStream(filePath))) {
-
-            Sheet sheet = workbook.createSheet("DataSheet");
-            createHeaderRow(fileheader, sheet, workbook);
-            populateDataRows(sheet, month, data);
-            workbook.write(fileOut);
-
-            log.info("xls 파일이 생성되었습니다.");
-        } catch (IOException e) {
-            throw new RuntimeException("xls 파일 생성 중 오류가 발생했습니다.", e);
-        } catch (IllegalArgumentException e) {
-            log.warn("전달된 데이터가 유효하지 않습니다: {}", e.getMessage());
-            throw e; // 예외를 다시 던져 호출자에게 알림
-        }
+        log.info("{} 파일이 생성되었습니다.", extension);
     }
 
     // 내부 클래스: ExcelCellStyle

@@ -7,7 +7,6 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
-import solomonm.ugo.collector.dbtoexcel.dto.DbinfoDTO;
 import solomonm.ugo.collector.dbtoexcel.dto.ExcelColDTO;
 import solomonm.ugo.collector.dbtoexcel.services.ExcelInfoService;
 import solomonm.ugo.collector.dbtoexcel.util.PreviousMonthConfig;
@@ -21,7 +20,7 @@ import java.util.List;
 public class DBtoExcelMain implements ApplicationRunner {
 
     private final ExcelInfoService excelInfoService;
-    private DbinfoDTO dbinfoDTO;
+
     @Value("${filegen.filepath}")
     private String filepath;
     @Value("${filegen.filename}")
@@ -68,7 +67,6 @@ public class DBtoExcelMain implements ApplicationRunner {
         log.info("---------------------------------------------------------> [ START ]");
 
         String filePath = prepareFilePath();
-        String filePath_noData=noDataFilePath();
 
         List<ExcelColDTO> dbData = null;
         dbData = excelInfoService.selectData();
@@ -76,7 +74,7 @@ public class DBtoExcelMain implements ApplicationRunner {
         if (validateData(dbData)) {
             excelInfoService.fileMake(fileheader, dbData, filePath, fileExtension);
         }else{
-            excelInfoService.fileMake(fileheader, dbData, filePath_noData, fileExtension);
+            log.warn("데이터가 존재하지 않습니다.");
         }
 
         log.info("------------------------------------------------------------> [ END ]");

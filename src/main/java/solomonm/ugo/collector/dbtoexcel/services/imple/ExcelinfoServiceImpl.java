@@ -26,6 +26,7 @@ public class ExcelinfoServiceImpl implements ExcelInfoService {
     @Override
     public List<ExcelColDTO> selectData() {
         log.info("db로부터 데이터 수집.");
+
         return excelInfoMapper.selectData(
                 PreviousMonthConfig.lastMonth_yyyyMM,
                 PreviousMonthConfig.firstDay_yyyyMMdd,
@@ -44,34 +45,16 @@ public class ExcelinfoServiceImpl implements ExcelInfoService {
     @Override
     public void fileMake(List<String> fileheader, List<ExcelColDTO> dbData, String filePath, String extension) {
         try {
-            if (extension.equals("xlsx")) {
-                log.info("xlsx 파일 생성(경로: {})", filePath);
-                excelFileGenerator.generate_XLSX_File(
-                        fileheader,
-                        filePath,
-                        PreviousMonthConfig.lastMonth_yyyyMM,
-                        dbData
-                );
-                log.info("엑셀 파일이 성공적으로 생성되었습니다. 경로: {}", filePath);
-
-            } else if (extension.equals("xls") || extension.equals("cell")) {
-                log.info("xls 파일 생성(경로: {})", filePath);
-                excelFileGenerator.generate_XLS_File(
-                        fileheader,
-                        filePath,
-                        PreviousMonthConfig.lastMonth_yyyyMM,
-                        dbData
-                );
-                log.info("엑셀 파일이 성공적으로 생성되었습니다. 경로: {}", filePath);
-
-            } else {
-                log.error("데이터 확장자는 'xlsx, xls, cell' 중 하나를 선택해 주세요.");
-            }
-
-        } catch (Exception e) {
+            excelFileGenerator.generate_File(
+                    fileheader,
+                    filePath,
+                    PreviousMonthConfig.lastMonth_yyyyMM,
+                    dbData,
+                    extension
+            );
+        } catch (
+                Exception e) {
             log.error("파일 생성 중 오류 발생: {}", e.getMessage());
         }
     }
-
-
 }
